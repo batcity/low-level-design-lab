@@ -1,0 +1,38 @@
+# Java / JVM
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.class
+*.log
+
+# Package Files
+*.zip
+*.tar.gz
+
+# Eclipse / IntelliJ / VS Code
+/.idea/
+/.vscode/
+/target/
+/bin/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Build tools
+/build/
+/out/
+
+# Logs
+*.log
+
+# Python (if you add any Python scripts later)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Misc
+*.swp
