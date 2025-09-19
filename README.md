@@ -44,7 +44,7 @@ These are not typically required in interviews, but useful for deepening underst
 This section contains **Java implementations of widely used object-oriented design patterns**, organized by category. Each pattern includes an example Java file and a README for notes.  
 
 ### Polymorphism
-- **[Method Overriding](./implementations/polymorphism/MethodOverriding.java)** – Demonstrates Java method overriding with `Car` and `Mercedes`.
+- **[Method Overriding](./implementations/polymorphism/MethodOverriding.java)** – Demonstrates Java method overriding`.
 
 ### Creational Patterns
 - **[Singleton](./implementations/creational_patterns/Singleton/Singleton.java)** – Ensures a single instance of a class.  
