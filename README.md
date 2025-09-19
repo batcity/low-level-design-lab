@@ -54,7 +54,7 @@ This section contains **Java implementations of widely used object-oriented desi
 - **[Prototype](./implementations/creational_patterns/Prototype/Prototype.java)** – Clones existing objects efficiently.  
 
 ### Structural Patterns
-- **[Adapter](./implementations/structural_patterns/Adapter/Adapter.java)** – Converts one interface to another.  
+- **[Adapter](./implementations/structural_patterns/Adapter/AdapterDemo.java)** – Converts one interface to another.  
 - **[Decorator](./implementations/structural_patterns/Decorator/Decorator.java)** – Adds responsibilities to objects dynamically.  
 - **[Composite](./implementations/structural_patterns/Composite/Composite.java)** – Treats individual objects and compositions uniformly.  
 - **[Facade](./implementations/structural_patterns/Facade/Facade.java)** – Simplifies access to complex subsystems.  
