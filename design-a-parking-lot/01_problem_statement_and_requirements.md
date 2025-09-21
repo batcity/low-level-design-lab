@@ -1,12 +1,12 @@
 # Design a Parking Lot System
 
 ## Description
-Design a parking lot management system that allows cars (and optionally other vehicles like bikes and trucks) to park, leave, and pay for parking. The system should track parking spot availability and calculate fees based on parking duration.
+Design a parking lot management system that allows vehicles to park, leave, and pay for parking. The system should track parking spot availability and calculate fees based on parking duration.
 
 ## Functional Requirements
 
 ### Vehicle Parking
-- Park a vehicle in an available spot.
+- Park a vehicle in an available spot assigned by the system.
 - Remove a vehicle from the lot when it leaves.
 
 ### Availability Tracking
