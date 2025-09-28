@@ -23,13 +23,13 @@ Each problem follows the same template for consistency:
 - Core classes/objects and their roles in the system.  
 
 ### 3. Class Diagram (UML)
-- Relationships between entities.  
+- Relationships between entities.
 
 ### 4. Core Workflows
-- Step-by-step object interactions for primary operations.  
+- Step-by-step object interactions for primary operations.
 
 ### 5. Code Skeleton (Java/Python/etc.)
-- Core classes and methods.  
+- Core classes and methods.
 
 ### 6. Design Principles & Patterns
 - SOLID, GRASP, and relevant design patterns applied.  
