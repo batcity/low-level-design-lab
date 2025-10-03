@@ -1,1 +1,1 @@
-![alt text](class_diagram.png)
+![alt text](parking_lot_class_diagram.png)
