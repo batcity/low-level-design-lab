@@ -4,7 +4,8 @@
 
 This parking system supports **high concurrency**, ensuring:
 
-- **Atomic reservation** of parking spots.
+- **Atomic reservation** of parking spots — supports optimistic locking (CAS/version checks) under normal load and switches to pessimistic locking (ReentrantLocks) under high per-spot contention, ensuring conflict-free reservations.
+- Contention is tracked per spot by measuring **failed CAS attempts** (optimistic path) or **threads blocked on locks** (pessimistic path), allowing adaptive locking strategies.
 - **Single active session per user**.
 - Thread-safe operations for starting, ending, and querying sessions.
 - Scalable to multiple threads or distributed nodes.
@@ -68,7 +69,8 @@ Thread-safe data structures used:
    - Set `endTime` to the current timestamp.
 
 3. **Release the parking spot**
-   - Atomically set the `AtomicBoolean` in `parkingSpotMap` to `true`.
+   - Atomically set the `AtomicBoolean` in `parkingSpotMap` to `true`. *TODO*: Take a look at the class diagram again
+   - the parkingSpotMap does not have any booleans
 
 4. **Remove the session from active sessions**
    - Returning `null` in `computeIfPresent` removes the session atomically.
@@ -106,6 +108,7 @@ Thread-safe data structures used:
 
 1. **Iterate `parkingSpotMap`:**
    ```java
+   // TODO: The parking spot map doesn't have booleans, take a look at this again once you have some actual code
    for (Map.Entry<SpotId, AtomicBoolean> entry : parkingSpotMap.entrySet()) {
        if (entry.getValue().get()) {
            availableSpots.add(entry.getKey());
@@ -134,7 +137,7 @@ Thread-safe data structures used:
 1. **Thread-safe structures:**
 
    * `ConcurrentHashMap` for sessions and spots.
-   * `AtomicBoolean` for spot reservation.
+   * `AtomicBoolean` for spot reservation. **TODO:** take a look at this after you have some real
 
 2. **Optimistic concurrency / retries:**
 
