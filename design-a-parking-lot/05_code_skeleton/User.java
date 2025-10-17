@@ -1,11 +1,11 @@
 class User {
-    String userId;
+    int userId;
     String name;
-    String contactInfo;
+    String phoneNumber;
 
-    public User(String userId, String name, String contactInfo) {
+    public User(int userId, String name, String phoneNumber) {
         this.userId = userId;
         this.name = name;
-        this.contactInfo = contactInfo;
+        this.phoneNumber = phoneNumber;
     }
 }
