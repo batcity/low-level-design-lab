@@ -29,6 +29,7 @@ public class User {
     }
 
     // TODO: Test this to show why this is bad
+    // For example, someone could get the list of vehicles and modify the userID to another one - yikes
     // public List<Vehicle> getVehicles() {
     //     return vehicles;
     // }
