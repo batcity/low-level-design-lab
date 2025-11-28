@@ -13,12 +13,12 @@ class ParkingService {
         map.put(1, new ParkingSpot(true, 1, 1));
         map.put(2, new ParkingSpot(true, 1, 2));
         map.put(3, new ParkingSpot(true, 1, 3));
-        map.put(4, new ParkingSpot(true, 1, 4));
-        map.put(5, new ParkingSpot(true, 1, 5));
+        map.put(4, new ParkingSpot(true, 2, 4));
+        map.put(5, new ParkingSpot(true, 2, 5));
         return map;
     }
 
-    public boolean startParkingSession(User user, Vehicle vehicle) {
+    public synchronized Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
         ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots = parkingLot.getAvailableParkingSpots();
         ParkingSpot first = availableParkingSpots.values()
         .stream()
@@ -26,13 +26,24 @@ class ParkingService {
         .orElse(null);
 
         if(first == null) {
-            return false;
+            return Optional.empty();
         }
 
         ParkingSession parkingSession = new ParkingSession(user, vehicle, first);
         parkingLot.markParkingSpotAsTaken(first);
         currentParkingSessionsByUserId.put(user.getUserId(), parkingSession);
 
+        return Optional.of(parkingSession.getParkingSessionId());
+    }
+
+    public boolean endParkingSession(User user) {
+        ParkingSession currentParkingSession = currentParkingSessionsByUserId.get(user.getUserId());
+
+        if(currentParkingSession==null) {
+            return false;
+        }
+
+        currentParkingSession.endSession();
         return true;
     }
 }
