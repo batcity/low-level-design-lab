@@ -3,7 +3,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class ParkingService {
 
-    private Map<UUID, ParkingSession> currentParkingSessionsByUserId = new HashMap<>();
+    private ConcurrentHashMap<UUID, ParkingSession> currentParkingSessionsByUserId = new ConcurrentHashMap<>();
     // Generating/Building a parkingLot and ParkingSpots
     private ConcurrentHashMap<Integer, ParkingSpot> parkingSpots = init();
     private ParkingLot parkingLot = new ParkingLot(2, parkingSpots);
@@ -30,9 +30,13 @@ class ParkingService {
         }
 
         ParkingSession parkingSession = new ParkingSession(user, vehicle, first);
-        parkingLot.markParkingSpotAsTaken(first);
-        currentParkingSessionsByUserId.put(user.getUserId(), parkingSession);
+        ParkingSession activeSession = currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), parkingSession);
 
+        if(activeSession != null) {
+            return Optional.empty();
+        }
+
+        parkingLot.markParkingSpotAsTaken(first);
         return Optional.of(parkingSession.getParkingSessionId());
     }
 
