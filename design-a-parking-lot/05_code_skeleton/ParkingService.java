@@ -40,14 +40,19 @@ class ParkingService {
         return Optional.of(parkingSession.getParkingSessionId());
     }
 
-    public boolean endParkingSession(User user) {
+    public synchronized boolean endParkingSession(User user) {
         ParkingSession currentParkingSession = currentParkingSessionsByUserId.get(user.getUserId());
 
         if(currentParkingSession==null) {
             return false;
         }
 
+        ParkingSpot parkingSpot = currentParkingSession.getParkingSpot();
+        parkingSpot.free();
+        parkingLot.markParkingSpotAsAvailable(parkingSpot);
         currentParkingSession.endSession();
+        currentParkingSessionsByUserId.remove(user.getUserId());
+        
         return true;
     }
 }
