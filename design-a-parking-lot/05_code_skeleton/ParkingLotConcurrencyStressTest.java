@@ -17,7 +17,7 @@ public class ParkingLotConcurrencyStressTest {
             System.exit(1);
         }
 
-        System.out.println("\n⚠️  ALL TESTS PASSED (unexpected)");
+        System.out.println("\n  ALL TESTS PASSED!");
     }
 
     /* -------------------------------------------------- */

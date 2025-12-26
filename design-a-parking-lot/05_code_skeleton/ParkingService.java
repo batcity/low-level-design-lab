@@ -32,6 +32,7 @@ class ParkingService {
         ParkingSession parkingSession = new ParkingSession(user, vehicle, first);
         ParkingSession activeSession = currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), parkingSession);
 
+        // ParkingSession session = currentParkingSessionsByUserId.computeIfAbsent(user.getUserId(), id -> new ParkingSession(user, vehicle, first));
         if(activeSession != null) {
             return Optional.empty();
         }
