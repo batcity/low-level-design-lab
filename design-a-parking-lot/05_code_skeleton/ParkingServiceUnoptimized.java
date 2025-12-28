@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-class ParkingService {
+class ParkingServiceUnoptimized {
 
     private ConcurrentHashMap<UUID, ParkingSession> currentParkingSessionsByUserId = new ConcurrentHashMap<>();
     // Generating/Building a parkingLot and ParkingSpots
@@ -18,30 +18,29 @@ class ParkingService {
         return map;
     }
 
-    public Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
+    public synchronized Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
+        ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots = parkingLot.getAvailableParkingSpots();
+        ParkingSpot first = availableParkingSpots.values()
+        .stream()
+        .findFirst()
+        .orElse(null);
 
-        for (ParkingSpot spot : parkingLot.getAvailableParkingSpots().values()) {
-
-            if (parkingLot.markParkingSpotAsTaken(spot)) {
-
-                ParkingSession session = new ParkingSession(user, vehicle, spot);
-                ParkingSession raced =
-                        currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), session);
-
-                if (raced == null) {
-                    return Optional.of(session.getParkingSessionId());
-                }
-
-                // same-user race → rollback spot
-                parkingLot.markParkingSpotAsAvailable(spot);
-                return Optional.empty();
-            }
+        if(first == null) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        ParkingSession parkingSession = new ParkingSession(user, vehicle, first);
+        ParkingSession activeSession = currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), parkingSession);
+
+        // ParkingSession session = currentParkingSessionsByUserId.computeIfAbsent(user.getUserId(), id -> new ParkingSession(user, vehicle, first));
+        if(activeSession != null) {
+            return Optional.empty();
+        }
+
+        parkingLot.markParkingSpotAsTaken(first);
+        return Optional.of(parkingSession.getParkingSessionId());
     }
 
-    // TODO: remove this synchronized section to speed things up
     public synchronized boolean endParkingSession(User user) {
         ParkingSession currentParkingSession = currentParkingSessionsByUserId.get(user.getUserId());
 
