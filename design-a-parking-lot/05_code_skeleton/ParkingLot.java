@@ -38,7 +38,6 @@ public class ParkingLot {
             return false;
         }
 
-        parkingSpot.occupy();
         return true;
     }
 

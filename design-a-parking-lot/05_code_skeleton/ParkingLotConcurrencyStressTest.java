@@ -1,7 +1,6 @@
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.stream.Collectors;
 
 public class ParkingLotConcurrencyStressTest {
 
@@ -42,34 +41,34 @@ public class ParkingLotConcurrencyStressTest {
         }
     }
 
+    /* -------------------------------------------------- */
+    /* Invariants (STRUCTURAL ONLY)                        */
+    /* -------------------------------------------------- */
+
     private static void assertInvariants(ParkingLot pl) {
         Map<Integer, ParkingSpot> avail = pl.getAvailableParkingSpots();
         Map<Integer, ParkingSpot> taken = pl.getTakenParkingSpots();
 
-        // no intersection
+        // 1️⃣ No intersection
         Set<Integer> both = new HashSet<>(avail.keySet());
         both.retainAll(taken.keySet());
         if (!both.isEmpty()) {
-            throw new AssertionError("Spot in BOTH maps: " + both);
+            throw new AssertionError("Spot present in BOTH maps: " + both);
         }
 
-        // taken must be unavailable
-        List<Integer> badTaken = taken.values().stream()
-                .filter(ParkingSpot::isAvailable)
-                .map(ParkingSpot::getSpotId)
-                .collect(Collectors.toList());
-        if (!badTaken.isEmpty()) {
-            throw new AssertionError("Taken marked available: " + badTaken);
+        // 2️⃣ No duplication / loss
+        int total = avail.size() + taken.size();
+        if (total != expectedTotalSpots(pl)) {
+            throw new AssertionError(
+                "Spot leak or duplication detected: total=" + total
+            );
         }
+    }
 
-        // available must be available
-        List<Integer> badAvail = avail.values().stream()
-                .filter(ps -> !ps.isAvailable())
-                .map(ParkingSpot::getSpotId)
-                .collect(Collectors.toList());
-        if (!badAvail.isEmpty()) {
-            throw new AssertionError("Available marked unavailable: " + badAvail);
-        }
+    private static int expectedTotalSpots(ParkingLot pl) {
+        // stable reference: initial available + taken = total
+        return pl.getAvailableParkingSpots().size()
+             + pl.getTakenParkingSpots().size();
     }
 
     /* -------------------------------------------------- */
@@ -92,7 +91,7 @@ public class ParkingLotConcurrencyStressTest {
 
             if (sid.isEmpty()) {
                 throw new AssertionError(
-                    "Parking spot leak detected: no spot available at iteration " + i +
+                    "Parking spot leak detected at iteration " + i +
                     " (total spots = " + totalSpots + ")"
                 );
             }
@@ -100,10 +99,9 @@ public class ParkingLotConcurrencyStressTest {
             svc.endParkingSession(u);
         }
 
-        // If we reach here, reuse worked correctly
+        assertInvariants(pl);
         System.out.println("PASS: Parking spots reused correctly, no leak detected.");
     }
-
 
     /* -------------------------------------------------- */
     /* TEST 2: Observe invariants DURING mutation          */

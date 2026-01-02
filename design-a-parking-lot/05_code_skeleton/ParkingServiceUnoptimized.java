@@ -10,11 +10,11 @@ class ParkingServiceUnoptimized {
 
     private ConcurrentHashMap<Integer, ParkingSpot> init() {
         ConcurrentHashMap<Integer, ParkingSpot> map = new ConcurrentHashMap<>();
-        map.put(1, new ParkingSpot(true, 1, 1));
-        map.put(2, new ParkingSpot(true, 1, 2));
-        map.put(3, new ParkingSpot(true, 1, 3));
-        map.put(4, new ParkingSpot(true, 2, 4));
-        map.put(5, new ParkingSpot(true, 2, 5));
+        map.put(1, new ParkingSpot(1, 1));
+        map.put(2, new ParkingSpot(1, 2));
+        map.put(3, new ParkingSpot(1, 3));
+        map.put(4, new ParkingSpot(2, 4));
+        map.put(5, new ParkingSpot(2, 5));
         return map;
     }
 
@@ -49,7 +49,6 @@ class ParkingServiceUnoptimized {
         }
 
         ParkingSpot parkingSpot = currentParkingSession.getParkingSpot();
-        parkingSpot.free();
         parkingLot.markParkingSpotAsAvailable(parkingSpot);
         currentParkingSession.endSession();
         currentParkingSessionsByUserId.remove(user.getUserId());

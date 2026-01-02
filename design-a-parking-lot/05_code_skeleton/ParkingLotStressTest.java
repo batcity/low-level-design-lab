@@ -1,11 +1,10 @@
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import java.util.stream.Collectors;
 
 /*
   Multiple client scenarios to stress-test the parking lot system.
-  Now with HARD invariant checks that FAIL the run.
+  Structural invariants only (single source of truth).
 */
 public class ParkingLotStressTest {
 
@@ -68,19 +67,16 @@ public class ParkingLotStressTest {
             f.setAccessible(true);
             return (ParkingLot) f.get(svc);
         } catch (Exception e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
     /* -------------------------------------------------- */
-    /* Invariants (LOG + FAIL)                             */
+    /* Invariants (STRUCTURAL ONLY)                        */
     /* -------------------------------------------------- */
 
     private void verifyAndLogInvariants(ParkingService svc) {
         ParkingLot pl = getParkingLotViaReflection(svc);
-        if (pl == null) {
-            throw new AssertionError("Cannot access ParkingLot via reflection");
-        }
 
         Map<Integer, ParkingSpot> avail = pl.getAvailableParkingSpots();
         Map<Integer, ParkingSpot> taken = pl.getTakenParkingSpots();
@@ -90,32 +86,12 @@ public class ParkingLotStressTest {
         System.out.println("taken.size     = " + taken.size());
         System.out.println("total          = " + (avail.size() + taken.size()));
 
-        // 1️⃣ intersection
+        // 1️⃣ No intersection
         Set<Integer> intersection = new HashSet<>(avail.keySet());
         intersection.retainAll(taken.keySet());
         System.out.println("intersection size (should be 0) = " + intersection.size());
         if (!intersection.isEmpty()) {
-            throw new AssertionError("Spot(s) in BOTH available and taken: " + intersection);
-        }
-
-        // 2️⃣ taken consistency
-        List<Integer> badTaken = taken.values().stream()
-                .filter(ParkingSpot::isAvailable)
-                .map(ParkingSpot::getSpotId)
-                .collect(Collectors.toList());
-        System.out.println("taken marked available (should be 0) = " + badTaken.size());
-        if (!badTaken.isEmpty()) {
-            throw new AssertionError("Taken spots marked available: " + badTaken);
-        }
-
-        // 3️⃣ available consistency
-        List<Integer> badAvail = avail.values().stream()
-                .filter(sp -> !sp.isAvailable())
-                .map(ParkingSpot::getSpotId)
-                .collect(Collectors.toList());
-        System.out.println("available marked unavailable (should be 0) = " + badAvail.size());
-        if (!badAvail.isEmpty()) {
-            throw new AssertionError("Available spots marked unavailable: " + badAvail);
+            throw new AssertionError("Spot(s) in BOTH maps: " + intersection);
         }
     }
 
@@ -245,7 +221,7 @@ public class ParkingLotStressTest {
     }
 
     /* -------------------------------------------------- */
-    /* SCENARIO 4 + 5 left unchanged structurally          */
+    /* SCENARIO 4: Mixed ops fuzz                          */
     /* -------------------------------------------------- */
 
     public void mixedOpsFuzzScenario() throws Exception {
@@ -284,6 +260,10 @@ public class ParkingLotStressTest {
         verifyAndLogInvariants(svc);
         System.out.println("==== MIXED OPS FUZZ COMPLETE ====");
     }
+
+    /* -------------------------------------------------- */
+    /* SCENARIO 5: Long run churn                          */
+    /* -------------------------------------------------- */
 
     public void longRunChurnScenario() throws Exception {
         System.out.println("\n==== LONG RUN CHURN (15s) ====");
