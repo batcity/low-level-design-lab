@@ -6,7 +6,7 @@ Each folder focuses on a specific problem (e.g., Parking Lot, BookMyShow, Chess,
 
 📌 **Goal:** Build a structured knowledge base of **OOP principles, design patterns, and code-level reasoning** for interviews and real-world development.  
 
-⚡ **Note:** These designs are for **learning and discussion** purposes. They are refined through practice, reading, and AI-assisted reasoning.  
+**Note:** These designs are for **learning and discussion** purposes. They are refined through practice, reading, and AI-assisted reasoning.  
 
 ---
 
@@ -54,7 +54,7 @@ These are not typically required in interviews but deepen understanding:
 
 ---
 
-## 🚀 Implementations of Common Design Patterns
+## Implementations of Common Design Patterns
 
 This section contains **Java implementations of widely used object-oriented design patterns**, organized by category. Each pattern includes an example file and notes.
 
@@ -89,7 +89,7 @@ This section contains **Java implementations of widely used object-oriented desi
 
 ---
 
-## 🚀 Why this Repo?
+## Why this Repo?
 
 - Strengthen **object-oriented design intuition**.  
 - Practice **clean, reusable, and testable code structures**.  

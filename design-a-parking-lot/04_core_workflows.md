@@ -1,4 +1,4 @@
-# Parking System – Core Workflows (Concurrent Version) - WIP - TODO: Refine this:
+# Parking System – Core Workflows (Concurrent Version) - WIP - refine this:
 
 ## Overview
 
@@ -6,6 +6,9 @@ This parking system supports **high concurrency**, ensuring:
 
 - **Atomic reservation** of parking spots — supports optimistic locking (CAS/version checks) under normal load and switches to pessimistic locking (ReentrantLocks) under high per-spot contention, ensuring conflict-free reservations.
 - Contention is tracked per spot by measuring **failed CAS attempts** (optimistic path) or **threads blocked on locks** (pessimistic path), allowing adaptive locking strategies.
+
+TODO: I'm only doing optimistic locking in the parking lot, gotta change the code to switch to pessimistic locks when there's high contention
+
 - **Single active session per user**.
 - Thread-safe operations for starting, ending, and querying sessions.
 - Scalable to multiple threads or distributed nodes.
@@ -132,31 +135,8 @@ Thread-safe data structures used:
 
 ---
 
-## 5. Additional High-Concurrency Recommendations
-
-1. **Thread-safe structures:**
-
-   * `ConcurrentHashMap` for sessions and spots.
-   * `AtomicBoolean` for spot reservation. **TODO:** take a look at this after you have some real
-
-2. **Optimistic concurrency / retries:**
-
-   * If spot reservation fails due to concurrent allocation, retry the next available spot.
-
-3. **Distributed coordination (for multi-node systems):**
-
-   * Use distributed locks (Redis SETNX, Zookeeper) to reserve spots across nodes.
-   * Store `currentParkingSessions` in a distributed cache to synchronize sessions.
-
-4. **Scalability:**
-
-   * Lock-free reads and atomic updates allow high throughput.
-   * Minimal contention per user and per spot.
-
-
 ✅ **Benefits of this design:**
 
 * Prevents **double-booking** of spots.
 * Guarantees **single active session per user**.
 * Thread-safe, lock-minimized design for **highly concurrent environments**.
-* Optionally supports **fast queries for available spots**.
