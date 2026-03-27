@@ -58,8 +58,13 @@ These are not typically required in interviews but deepen understanding:
 
 This section contains **Java implementations of widely used object-oriented design patterns**, organized by category. Each pattern includes an example file and notes.
 
-### Polymorphism
-- **[Method Overriding](./implementations/ood_concepts/polymorphism/MethodOverriding.java)** – Demonstrates method overriding.
+### Core Pillars of Object-Oriented Programming (OOP)
+
+1. Encapsulation
+2. Abstraction
+3. Inheritance
+4. Polymorphism
+-- **[Method Overriding](./implementations/ood_concepts/polymorphism/MethodOverriding.java)** – Demonstrates method overriding.
 
 ### Creational Patterns
 - **[Singleton](./implementations/design_patterns/creational_patterns/Singleton/Singleton.java)** – Ensures a single instance of a class.  
