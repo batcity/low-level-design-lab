@@ -1,12 +1,12 @@
 # low-level-design-lab  
 
-A personal collection of **low-level design explorations, UML diagrams, and code skeletons** as I practice building clean, extensible, and maintainable systems.  
+A personal collection of **low-level design explorations, UML diagrams, and code skeletons** as I practice building clean, extensible, and maintainable systems.
 
-Each folder focuses on a specific problem (e.g., Parking Lot, BookMyShow, Chess, Ride-Sharing), documenting the **problem context, object modeling, class interactions, design choices, and key learnings**.  
+Each folder focuses on a specific problem (e.g., Parking Lot, Movie ticket booking system, Chess, Ride-Sharing), documenting the **problem context, object modeling, class interactions, design choices, and key learnings**.  
 
 📌 **Goal:** Build a structured knowledge base of **OOP principles, design patterns, and code-level reasoning** for interviews and real-world development.  
 
-**Note:** These designs are for **learning and discussion** purposes. They are refined through practice, reading, and AI-assisted reasoning.  
+**Note:** These designs are for **learning and discussion** purposes. They are refined through practice, reading, and AI-assisted reasoning.
 
 ---
 

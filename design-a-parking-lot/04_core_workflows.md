@@ -1,4 +1,4 @@
-# Parking System – Core Workflows (Concurrent Version) - WIP - refine this:
+# Parking System – Core Workflows (Concurrent Version):
 
 ## Overview
 
@@ -7,7 +7,7 @@ This parking system supports **high concurrency**, ensuring:
 - **Atomic reservation** of parking spots — supports optimistic locking (CAS/version checks) under normal load and switches to pessimistic locking (ReentrantLocks) under high per-spot contention, ensuring conflict-free reservations.
 - Contention is tracked per spot by measuring **failed CAS attempts** (optimistic path) or **threads blocked on locks** (pessimistic path), allowing adaptive locking strategies.
 
-TODO: I'm only doing optimistic locking in the parking lot, gotta change the code to switch to pessimistic locks when there's high contention
+TODO: I'm only using optimistic locking in the parking lot implementation, gotta change the code to switch to pessimistic locks when there's high contention
 
 - **Single active session per user**.
 - Thread-safe operations for starting, ending, and querying sessions.
@@ -17,17 +17,13 @@ Key components:
 
 | Component        | Responsibility                                     |
 | ---------------- | ------------------------------------------------- |
-| `ParkingService` | Manages user sessions (`currentParkingSessions`)  |
-| `ParkingLot`     | Tracks parking spots (`parkingSpotMap`)           |
+| `ParkingService` | Manages user sessions |
+| `ParkingLot`     | Tracks parking spots |
 | `ParkingSession` | Records user, vehicle, spot, start/end times      |
 
-Thread-safe data structures used:
-
-- `ConcurrentHashMap` – for `currentParkingSessions` and `parkingSpotMap`.
-- `AtomicBoolean` – for atomic spot reservation and release.
-- Optional `ConcurrentLinkedQueue` – for fast reads of available spots.
-
 ---
+
+## Workflows:
 
 ## 1. Start a Parking Session
 
@@ -36,19 +32,16 @@ Thread-safe data structures used:
 **Workflow:**
 
 1. **Check for existing session**
-   - Atomically verify that the user does not already have an active session using `ConcurrentHashMap.compute`.
+   - Atomically verify that the user does not already have an active session
    - If a session exists, return an error: `User already has an active parking session`.
 
 2. **Find and reserve an available spot**
-   - Iterate over `parkingSpotMap` (or a cached available-spots queue).
-   - Use `AtomicBoolean.compareAndSet(true, false)` to **atomically reserve** a spot.
-   - If no spot is available, return an error: `No parking spots available`.
 
 3. **Create and store the parking session**
    - Generate a `ParkingSession` with user, vehicle, spot ID, and start time.
-   - Store the session in `currentParkingSessions` **atomically**.
+   - Store the session in `currentParkingSessionsByUserId` **atomically**.
 
-4. **Return the session to the client**
+4. **Return the session ID to the client**
 
 **Concurrency Guarantees:**
 
@@ -65,18 +58,15 @@ Thread-safe data structures used:
 **Workflow:**
 
 1. **Retrieve the current session**
-   - Atomically fetch the session for the user using `ConcurrentHashMap.computeIfPresent`.
+   - Atomically fetch the session for the user.
    - If no session exists, return an error: `No active parking session`.
 
 2. **Mark the session as ended**
    - Set `endTime` to the current timestamp.
 
 3. **Release the parking spot**
-   - Atomically set the `AtomicBoolean` in `parkingSpotMap` to `true`. *TODO*: Take a look at the class diagram again
-   - the parkingSpotMap does not have any booleans
 
 4. **Remove the session from active sessions**
-   - Returning `null` in `computeIfPresent` removes the session atomically.
 
 5. **Return success to the client**
 
@@ -87,13 +77,15 @@ Thread-safe data structures used:
 
 ---
 
+## Workflows 3 and 4 are Future Improvements:
+
 ## 3. Get Current Parking Session
 
 **Description:** Retrieves the user’s active parking session.
 
 **Workflow:**
 
-1. Fetch the session from `currentParkingSessions` using `ConcurrentHashMap.get(userId)`.
+1. Fetch the user's current session.
 2. If no session exists, return `null` or an appropriate response.
 
 **Concurrency Guarantees:**
@@ -107,31 +99,11 @@ Thread-safe data structures used:
 
 **Description:** Retrieves a list of currently available spots.
 
-**Options:**
-
-1. **Iterate `parkingSpotMap`:**
-   ```java
-   // TODO: The parking spot map doesn't have booleans, take a look at this again once you have some actual code
-   for (Map.Entry<SpotId, AtomicBoolean> entry : parkingSpotMap.entrySet()) {
-       if (entry.getValue().get()) {
-           availableSpots.add(entry.getKey());
-       }
-   }
-    ````
-
-* Simple, fully thread-safe.
-* May be slightly slower if the parking lot is very large.
-
-2. **Cached list of available spots (optional optimization):**
-
-   * Maintain a `ConcurrentLinkedQueue` of available spots.
-   * On reservation/release, atomically update the queue.
-   * Enables very fast reads without iterating the map.
+1. This is fairly straightforward, the list of available parking spots from the ParkingLot class needs to be returned to the user
 
 **Concurrency Guarantees:**
 
 * Spot availability always reflects atomic reservations/releases.
-* Cached queue may be slightly stale under extreme concurrency but is acceptable for most queries.
 
 ---
 
