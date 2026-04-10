@@ -1,11 +1,15 @@
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ParkingLot {
     private final UUID parkingLotId;
     private final int numFloors;
     private ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots;
     private ConcurrentHashMap<Integer, ParkingSpot> takenParkingSpots;
+
+    private ConcurrentLinkedQueue<ParkingSpot> availableParkingSpotsQueue;
+    private ConcurrentLinkedQueue<ParkingSpot> takenParkingSpotsQueue;
 
     public ParkingLot(int numFloors, ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots) {
         this.parkingLotId = UUID.randomUUID();
@@ -26,28 +30,21 @@ public class ParkingLot {
         return availableParkingSpots;
     }
 
-    public ConcurrentHashMap<Integer, ParkingSpot> getTakenParkingSpots() {
-        return takenParkingSpots;
+    public ParkingSpot getNextAvailableParkingSpot() {
+        return availableParkingSpotsQueue.poll();
     }
 
+    // public ConcurrentHashMap<Integer, ParkingSpot> getTakenParkingSpots() {
+    //     return takenParkingSpots;
+    // }
+
     public boolean markParkingSpotAsTaken(ParkingSpot parkingSpot) {
-        availableParkingSpots.remove(parkingSpot.getSpotId());
-        ParkingSpot parkingSpotVal = takenParkingSpots.putIfAbsent(parkingSpot.getSpotId(), parkingSpot);
-
-        if(parkingSpotVal!=null) {
-            return false;
-        }
-
+        takenParkingSpotsQueue.add(parkingSpot);
         return true;
     }
 
     public boolean markParkingSpotAsAvailable(ParkingSpot parkingSpot) {
-        takenParkingSpots.remove(parkingSpot.getSpotId());
-        ParkingSpot parkingSpotVal = availableParkingSpots.putIfAbsent(parkingSpot.getSpotId(), parkingSpot);
-
-        if(parkingSpotVal!=null) {
-            return false;
-        }
+        availableParkingSpotsQueue.add(parkingSpot);
         
         return true;
     }

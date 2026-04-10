@@ -2,7 +2,7 @@
 
 A personal collection of **low-level design explorations, UML diagrams, and code skeletons** as I practice building clean, extensible, and maintainable systems.
 
-Each folder focuses on a specific problem (e.g., Parking Lot, Movie ticket booking system, Chess, Ride-Sharing), documenting the **problem context, object modeling, class interactions, design choices, and key learnings**.  
+Each folder focuses on a specific problem (e.g., Parking Lot, Movie ticket booking system, Chess, Ride-Sharing), documenting the **problem context, object modeling, class interactions, design choices, and key learnings**.
 
 📌 **Goal:** Build a structured knowledge base of **OOP principles, design patterns, and code-level reasoning** for interviews and real-world development.  
 

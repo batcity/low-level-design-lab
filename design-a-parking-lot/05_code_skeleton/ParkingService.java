@@ -20,9 +20,28 @@ class ParkingService {
 
     public Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
 
-        for (ParkingSpot spot : parkingLot.getAvailableParkingSpots().values()) {
+        // TODO: This would cause a thundering herd problem, modify this to a concurrent linked queue
+        // for (ParkingSpot spot : parkingLot.getAvailableParkingSpots().values()) {
 
-            if (parkingLot.markParkingSpotAsTaken(spot)) {
+        //     if (parkingLot.markParkingSpotAsTaken(spot)) {
+
+        //         ParkingSession session = new ParkingSession(user, vehicle, spot);
+        //         ParkingSession raced =
+        //                 currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), session);
+
+        //         if (raced == null) {
+        //             return Optional.of(session.getParkingSessionId());
+        //         }
+
+        //         // same-user race → rollback spot
+        //         parkingLot.markParkingSpotAsAvailable(spot);
+        //         return Optional.empty();
+        //     }
+        // }
+
+        ParkingSpot spot = parkingLot.getNextAvailableParkingSpot();
+
+        if (parkingLot.markParkingSpotAsTaken(spot)) {
 
                 ParkingSession session = new ParkingSession(user, vehicle, spot);
                 ParkingSession raced =
@@ -35,7 +54,6 @@ class ParkingService {
                 // same-user race → rollback spot
                 parkingLot.markParkingSpotAsAvailable(spot);
                 return Optional.empty();
-            }
         }
 
         return Optional.empty();

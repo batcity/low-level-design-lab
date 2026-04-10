@@ -6,9 +6,9 @@
 
     Tradeoffs:
 
-    - If there's high contention during peak traffic (perhaps during the 9 AM office stretch), then it's possible that multiple users might compute for the same spot which would mean that there could potentially be a large amount of retries -> this would cause increased latency for users
+    - If there's high contention during peak traffic (perhaps during the 9 AM office stretch), then it's possible that multiple users might compete for the same spot which would mean that there could potentially be a large amount of retries -> this would cause increased latency for users
 
     Alternative:
 
-    - Pessimistic locking is an alternative 
+    - Pessimistic locking or a hybrid strategy where pessimistic locking takes over if there are too many retries for each thread are viable alternatives
 
