@@ -64,7 +64,7 @@ This section contains **Java implementations of widely used object-oriented desi
 2. Abstraction
 3. Inheritance
 4. Polymorphism
--- **[Method Overriding](./implementations/ood_concepts/polymorphism/MethodOverriding.java)** – Demonstrates method overriding.
+-- **[Method Overriding](./design-principles-and-patterns/ood_concepts/polymorphism/MethodOverriding.java)** – Demonstrates method overriding.
 
 ### Creational Patterns
 - **[Singleton](./implementations/design_patterns/creational_patterns/Singleton/Singleton.java)** – Ensures a single instance of a class.  
