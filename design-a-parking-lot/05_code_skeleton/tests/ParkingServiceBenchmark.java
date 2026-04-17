@@ -8,11 +8,9 @@ public class ParkingServiceBenchmark {
 
     public static void main(String[] args) throws Exception {
         System.out.println("Warmup...");
-        run(new ParkingServiceUnoptimized(), false);
         run(new ParkingService(), false);
 
         System.out.println("\n=== BENCHMARK ===");
-        run(new ParkingServiceUnoptimized(), true);
         run(new ParkingService(), true);
     }
 
@@ -36,10 +34,7 @@ public class ParkingServiceBenchmark {
             final int idx = i;
             ex.submit(() -> {
                 start.await();
-                if (svc instanceof ParkingServiceUnoptimized ps)
-                    ps.startParkingSession(users.get(idx), vehicles.get(idx));
-                else
-                    ((ParkingService) svc)
+                ((ParkingService) svc)
                             .startParkingSession(users.get(idx), vehicles.get(idx));
                 return null;
             });

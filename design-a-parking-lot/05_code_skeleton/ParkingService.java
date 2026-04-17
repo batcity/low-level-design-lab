@@ -1,43 +1,25 @@
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 class ParkingService {
 
     private ConcurrentHashMap<UUID, ParkingSession> currentParkingSessionsByUserId = new ConcurrentHashMap<>();
     // Generating/Building a parkingLot and ParkingSpots
-    private ConcurrentHashMap<Integer, ParkingSpot> parkingSpots = init();
+    private ConcurrentLinkedQueue<ParkingSpot> parkingSpots = init();
     private ParkingLot parkingLot = new ParkingLot(2, parkingSpots);
 
-    private ConcurrentHashMap<Integer, ParkingSpot> init() {
-        ConcurrentHashMap<Integer, ParkingSpot> map = new ConcurrentHashMap<>();
-        map.put(1, new ParkingSpot(1, 1));
-        map.put(2, new ParkingSpot(1, 2));
-        map.put(3, new ParkingSpot(1, 3));
-        map.put(4, new ParkingSpot(2, 4));
-        map.put(5, new ParkingSpot(2, 5));
-        return map;
+    private ConcurrentLinkedQueue<ParkingSpot> init() {
+        ConcurrentLinkedQueue<ParkingSpot> parkingSpots = new ConcurrentLinkedQueue<>();
+        parkingSpots.add(new ParkingSpot(1, 1));
+        parkingSpots.add(new ParkingSpot(1, 2));
+        parkingSpots.add(new ParkingSpot(1, 3));
+        parkingSpots.add(new ParkingSpot(2, 4));
+        parkingSpots.add(new ParkingSpot(2, 5));
+        return parkingSpots;
     }
 
     public Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
-
-        // TODO: This would cause a thundering herd problem, modify this to a concurrent linked queue
-        // for (ParkingSpot spot : parkingLot.getAvailableParkingSpots().values()) {
-
-        //     if (parkingLot.markParkingSpotAsTaken(spot)) {
-
-        //         ParkingSession session = new ParkingSession(user, vehicle, spot);
-        //         ParkingSession raced =
-        //                 currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), session);
-
-        //         if (raced == null) {
-        //             return Optional.of(session.getParkingSessionId());
-        //         }
-
-        //         // same-user race → rollback spot
-        //         parkingLot.markParkingSpotAsAvailable(spot);
-        //         return Optional.empty();
-        //     }
-        // }
 
         ParkingSpot spot = parkingLot.getNextAvailableParkingSpot();
 

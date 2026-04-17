@@ -1,21 +1,17 @@
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ParkingLot {
     private final UUID parkingLotId;
     private final int numFloors;
-    private ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots;
-    private ConcurrentHashMap<Integer, ParkingSpot> takenParkingSpots;
+    private ConcurrentLinkedQueue<ParkingSpot> availableParkingSpots;
+    private ConcurrentLinkedQueue<ParkingSpot> takenParkingSpots;
 
-    private ConcurrentLinkedQueue<ParkingSpot> availableParkingSpotsQueue;
-    private ConcurrentLinkedQueue<ParkingSpot> takenParkingSpotsQueue;
-
-    public ParkingLot(int numFloors, ConcurrentHashMap<Integer, ParkingSpot> availableParkingSpots) {
+    public ParkingLot(int numFloors, ConcurrentLinkedQueue<ParkingSpot> availableParkingSpots) {
         this.parkingLotId = UUID.randomUUID();
         this.numFloors = numFloors;
         this.availableParkingSpots = availableParkingSpots;
-        this.takenParkingSpots = new ConcurrentHashMap<>();
+        this.takenParkingSpots = new ConcurrentLinkedQueue<>();
     }
 
     public UUID getParkingLotId() {
@@ -26,26 +22,21 @@ public class ParkingLot {
         return numFloors;
     }
 
-    public ConcurrentHashMap<Integer, ParkingSpot> getAvailableParkingSpots() {
+    public ConcurrentLinkedQueue<ParkingSpot> getAvailableParkingSpots() {
         return availableParkingSpots;
     }
 
     public ParkingSpot getNextAvailableParkingSpot() {
-        return availableParkingSpotsQueue.poll();
+        return availableParkingSpots.poll();
     }
 
-    // public ConcurrentHashMap<Integer, ParkingSpot> getTakenParkingSpots() {
-    //     return takenParkingSpots;
-    // }
-
     public boolean markParkingSpotAsTaken(ParkingSpot parkingSpot) {
-        takenParkingSpotsQueue.add(parkingSpot);
+        takenParkingSpots.add(parkingSpot);
         return true;
     }
 
     public boolean markParkingSpotAsAvailable(ParkingSpot parkingSpot) {
-        availableParkingSpotsQueue.add(parkingSpot);
-        
+        availableParkingSpots.add(parkingSpot);
         return true;
     }
 
