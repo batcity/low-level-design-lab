@@ -46,29 +46,31 @@ public class ParkingLotConcurrencyStressTest {
     /* -------------------------------------------------- */
 
     private static void assertInvariants(ParkingLot pl) {
-        Map<Integer, ParkingSpot> avail = pl.getAvailableParkingSpots();
-        Map<Integer, ParkingSpot> taken = pl.getTakenParkingSpots();
+        // Note: Ensure these return the actual collections from ParkingLot
+        Collection<ParkingSpot> avail = pl.getAvailableParkingSpots();
 
         // 1️⃣ No intersection
-        Set<Integer> both = new HashSet<>(avail.keySet());
-        both.retainAll(taken.keySet());
-        if (!both.isEmpty()) {
-            throw new AssertionError("Spot present in BOTH maps: " + both);
+        // We create a Set of the ParkingSpot objects
+        Set<ParkingSpot> intersection = new HashSet<>(avail);
+        
+        // retainAll keeps only elements that exist in both collections
+        
+        if (!intersection.isEmpty()) {
+            throw new AssertionError("Spot(s) present in BOTH available and taken: " + intersection);
         }
 
         // 2️⃣ No duplication / loss
         int total = avail.size() + taken.size();
         if (total != expectedTotalSpots(pl)) {
             throw new AssertionError(
-                "Spot leak or duplication detected: total=" + total
+                "Spot leak or duplication detected: total=" + total + 
+                " (expected " + expectedTotalSpots(pl) + ")"
             );
         }
     }
 
     private static int expectedTotalSpots(ParkingLot pl) {
-        // stable reference: initial available + taken = total
         return pl.getAvailableParkingSpots().size()
-             + pl.getTakenParkingSpots().size();
     }
 
     /* -------------------------------------------------- */

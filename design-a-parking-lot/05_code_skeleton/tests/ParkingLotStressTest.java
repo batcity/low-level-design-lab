@@ -78,20 +78,23 @@ public class ParkingLotStressTest {
     private void verifyAndLogInvariants(ParkingService svc) {
         ParkingLot pl = getParkingLotViaReflection(svc);
 
-        Map<Integer, ParkingSpot> avail = pl.getAvailableParkingSpots();
-        Map<Integer, ParkingSpot> taken = pl.getTakenParkingSpots();
+        // 1. Get the actual collections (Queues, not Maps)
+        ConcurrentLinkedQueue<ParkingSpot> avail = pl.getAvailableParkingSpots();
 
         System.out.println(">>> Parking lot snapshot:");
         System.out.println("available.size = " + avail.size());
         System.out.println("taken.size     = " + taken.size());
         System.out.println("total          = " + (avail.size() + taken.size()));
 
-        // 1️⃣ No intersection
-        Set<Integer> intersection = new HashSet<>(avail.keySet());
-        intersection.retainAll(taken.keySet());
+        // 2. Fix: Create a Set of ParkingSpot objects directly from the 'avail' queue
+        Set<ParkingSpot> intersection = new HashSet<>(avail);
+        
+        // 3. Fix: Use retainAll to find spots that exist in both collections
+        
         System.out.println("intersection size (should be 0) = " + intersection.size());
+        
         if (!intersection.isEmpty()) {
-            throw new AssertionError("Spot(s) in BOTH maps: " + intersection);
+            throw new AssertionError("Spot(s) in BOTH available and taken lists: " + intersection);
         }
     }
 

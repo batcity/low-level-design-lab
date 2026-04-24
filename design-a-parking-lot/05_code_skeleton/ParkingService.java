@@ -21,24 +21,18 @@ class ParkingService {
 
     public Optional<UUID> startParkingSession(User user, Vehicle vehicle) throws Exception {
 
-        ParkingSpot spot = parkingLot.getNextAvailableParkingSpot();
+        ParkingSpot spot = parkingLot.tryAcquireSpot();
+        if (spot == null) return Optional.empty();
 
-        if (parkingLot.markParkingSpotAsTaken(spot)) {
+        ParkingSession session = new ParkingSession(user, vehicle, spot);
+        ParkingSession raced = currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), session);
 
-                ParkingSession session = new ParkingSession(user, vehicle, spot);
-                ParkingSession raced =
-                        currentParkingSessionsByUserId.putIfAbsent(user.getUserId(), session);
-
-                if (raced == null) {
-                    return Optional.of(session.getParkingSessionId());
-                }
-
-                // same-user race → rollback spot
-                parkingLot.markParkingSpotAsAvailable(spot);
-                return Optional.empty();
+        if (raced != null) {
+            parkingLot.releaseSpot(spot);
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        return Optional.of(session.getParkingSessionId());
     }
 
     public boolean endParkingSession(User user) {
@@ -50,7 +44,7 @@ class ParkingService {
         }
 
         session.endSession();
-        parkingLot.markParkingSpotAsAvailable(session.getParkingSpot());
+        parkingLot.releaseSpot(session.getParkingSpot());
 
         return true;
     }

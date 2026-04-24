@@ -5,13 +5,11 @@ public class ParkingLot {
     private final UUID parkingLotId;
     private final int numFloors;
     private ConcurrentLinkedQueue<ParkingSpot> availableParkingSpots;
-    private ConcurrentLinkedQueue<ParkingSpot> takenParkingSpots;
 
     public ParkingLot(int numFloors, ConcurrentLinkedQueue<ParkingSpot> availableParkingSpots) {
         this.parkingLotId = UUID.randomUUID();
         this.numFloors = numFloors;
         this.availableParkingSpots = availableParkingSpots;
-        this.takenParkingSpots = new ConcurrentLinkedQueue<>();
     }
 
     public UUID getParkingLotId() {
@@ -22,17 +20,19 @@ public class ParkingLot {
         return numFloors;
     }
 
+    // This method is useful for my unit tests
     public ConcurrentLinkedQueue<ParkingSpot> getAvailableParkingSpots() {
         return availableParkingSpots;
     }
 
-    public ParkingSpot getNextAvailableParkingSpot() {
+    public ParkingSpot tryAcquireSpot() {
         return availableParkingSpots.poll();
     }
 
-    public boolean markParkingSpotAsTaken(ParkingSpot parkingSpot) {
-        takenParkingSpots.add(parkingSpot);
-        return true;
+     public void releaseSpot(ParkingSpot spot) {
+        if (spot != null) {
+            availableParkingSpots.add(spot);
+        }
     }
 
     public boolean markParkingSpotAsAvailable(ParkingSpot parkingSpot) {
@@ -43,6 +43,5 @@ public class ParkingLot {
     @Override
     public String toString() {
         return "ParkingLot [parkingLotId=" + parkingLotId + ", numFloors=" + numFloors + ", availableParkingSpots="
-                + availableParkingSpots + ", takenParkingSpots=" + takenParkingSpots + "]";
     }
 }
