@@ -1,7 +1,29 @@
+/*
+ * Simple throughput(operations completed per unit time) benchmark for ParkingService.
+ *
+ * Measures how long the service takes to process a large
+ * number of concurrent parking attempts using a fixed-size
+ * thread pool.
+ *
+ * Focus:
+ * - contention overhead
+ * - scalability characteristics
+ * - concurrent collection performance
+ *
+ * NOTE:
+ * This benchmark does NOT validate correctness.
+ * It only measures execution time under parallel load.
+ *
+ * Also note:
+ * the parking lot contains only 5 spots, so after the
+ * lot fills up, most operations fail fast. The benchmark
+ * therefore primarily measures concurrent contention and
+ * rejection-path performance rather than sustained parking throughput.
+ */
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ParkingServiceBenchmark {
+public class ParkingServiceThroughputBenchmark {
 
     static final int THREADS = 32;
     static final int OPS = 50_000;

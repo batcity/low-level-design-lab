@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class ParkingSpot {
     
     private final int floor;
@@ -22,5 +24,21 @@ public class ParkingSpot {
                "spotId=" + spotId +
                ", floor=" + floor +
                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ParkingSpot)) return false;
+
+        ParkingSpot that = (ParkingSpot) o;
+
+        return floor == that.floor &&
+            spotId == that.spotId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(floor, spotId);
     }
 }

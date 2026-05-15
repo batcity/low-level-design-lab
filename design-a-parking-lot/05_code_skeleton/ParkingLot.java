@@ -21,7 +21,7 @@ public class ParkingLot {
     }
 
     // This method is useful for my unit tests
-    public ConcurrentLinkedQueue<ParkingSpot> getAvailableParkingSpots() {
+    ConcurrentLinkedQueue<ParkingSpot> getAvailableParkingSpots() {
         return availableParkingSpots;
     }
 
@@ -42,6 +42,6 @@ public class ParkingLot {
 
     @Override
     public String toString() {
-        return "ParkingLot [parkingLotId=" + parkingLotId + ", numFloors=" + numFloors + ", availableParkingSpots="
+        return "ParkingLot [parkingLotId=" + parkingLotId + ", numFloors=" + numFloors + ", availableParkingSpots=";
     }
 }

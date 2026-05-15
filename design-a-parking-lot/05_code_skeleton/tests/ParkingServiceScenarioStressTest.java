@@ -1,18 +1,19 @@
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.stream.Collectors;
 
 /*
   Multiple client scenarios to stress-test the parking lot system.
   Structural invariants only (single source of truth).
 */
-public class ParkingLotStressTest {
+public class ParkingServiceScenarioStressTest {
 
     private static final Random RNG = new Random(12345);
 
     public static void main(String[] args) throws Exception {
         String scenario = (args.length > 0) ? args[0] : "all";
-        ParkingLotStressTest t = new ParkingLotStressTest();
+        ParkingServiceScenarioStressTest t = new ParkingServiceScenarioStressTest();
 
         try {
             switch (scenario) {
@@ -78,23 +79,100 @@ public class ParkingLotStressTest {
     private void verifyAndLogInvariants(ParkingService svc) {
         ParkingLot pl = getParkingLotViaReflection(svc);
 
-        // 1. Get the actual collections (Queues, not Maps)
-        ConcurrentLinkedQueue<ParkingSpot> avail = pl.getAvailableParkingSpots();
+        try {
+            // -----------------------------
+            // Access active sessions
+            // -----------------------------
+            var sessionsField =
+                    ParkingService.class.getDeclaredField("currentParkingSessionsByUserId");
 
-        System.out.println(">>> Parking lot snapshot:");
-        System.out.println("available.size = " + avail.size());
-        System.out.println("taken.size     = " + taken.size());
-        System.out.println("total          = " + (avail.size() + taken.size()));
+            sessionsField.setAccessible(true);
 
-        // 2. Fix: Create a Set of ParkingSpot objects directly from the 'avail' queue
-        Set<ParkingSpot> intersection = new HashSet<>(avail);
-        
-        // 3. Fix: Use retainAll to find spots that exist in both collections
-        
-        System.out.println("intersection size (should be 0) = " + intersection.size());
-        
-        if (!intersection.isEmpty()) {
-            throw new AssertionError("Spot(s) in BOTH available and taken lists: " + intersection);
+            @SuppressWarnings("unchecked")
+            ConcurrentHashMap<UUID, ParkingSession> sessions =
+                    (ConcurrentHashMap<UUID, ParkingSession>) sessionsField.get(svc);
+
+            // -----------------------------
+            // Available spots
+            // -----------------------------
+            Collection<ParkingSpot> available =
+                    pl.getAvailableParkingSpots();
+
+            // -----------------------------
+            // Taken spots (derived from sessions)
+            // -----------------------------
+            Set<ParkingSpot> taken = sessions.values()
+                    .stream()
+                    .map(ParkingSession::getParkingSpot)
+                    .collect(Collectors.toSet());
+
+            // -----------------------------
+            // Logging
+            // -----------------------------
+            System.out.println("\n>>> Parking Lot Snapshot");
+            System.out.println("available = " + available.size());
+            System.out.println("taken     = " + taken.size());
+
+            // -----------------------------
+            // 1. No overlap between
+            // available and taken
+            // -----------------------------
+            Set<ParkingSpot> overlap = new HashSet<>(available);
+            overlap.retainAll(taken);
+
+            if (!overlap.isEmpty()) {
+                throw new AssertionError(
+                        "Spot(s) exist in BOTH available and taken: " + overlap
+                );
+            }
+
+            // -----------------------------
+            // 2. No duplicate available spots
+            // -----------------------------
+            Set<ParkingSpot> uniqueAvailable = new HashSet<>(available);
+
+            if (uniqueAvailable.size() != available.size()) {
+                throw new AssertionError(
+                        "Duplicate spots detected in available queue"
+                );
+            }
+
+            // -----------------------------
+            // 3. Total spot count invariant
+            // -----------------------------
+            int totalSpots = available.size() + taken.size();
+
+            final int EXPECTED_TOTAL_SPOTS = 5;
+
+            if (totalSpots != EXPECTED_TOTAL_SPOTS) {
+                throw new AssertionError(
+                        "Spot leak or duplication detected. " +
+                        "Expected=" + EXPECTED_TOTAL_SPOTS +
+                        ", Actual=" + totalSpots
+                );
+            }
+
+            // -----------------------------
+            // 4. One session per user
+            // -----------------------------
+            Set<UUID> uniqueUsers = new HashSet<>();
+
+            for (ParkingSession session : sessions.values()) {
+                UUID uid = session.getUser().getUserId();
+
+                if (!uniqueUsers.add(uid)) {
+                    throw new AssertionError(
+                            "Duplicate active sessions for user: " + uid
+                    );
+                }
+            }
+
+            System.out.println("Invariant check PASSED");
+
+        } catch (AssertionError e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Invariant verification failed", e);
         }
     }
 
