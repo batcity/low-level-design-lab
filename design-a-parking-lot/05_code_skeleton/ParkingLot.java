@@ -29,15 +29,10 @@ public class ParkingLot {
         return availableParkingSpots.poll();
     }
 
-     public void releaseSpot(ParkingSpot spot) {
+    public void releaseSpot(ParkingSpot spot) {
         if (spot != null) {
             availableParkingSpots.add(spot);
         }
-    }
-
-    public boolean markParkingSpotAsAvailable(ParkingSpot parkingSpot) {
-        availableParkingSpots.add(parkingSpot);
-        return true;
     }
 
     @Override
