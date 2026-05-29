@@ -1,14 +1,30 @@
-# Tradeoffs and alternatives (TODO: Refine this)
+# Tradeoffs and alternatives:
 
-1. I used optimistic locking vs pessimistic locks
+## 1. Lock-Free Concurrent Collections vs Explicit Locks
 
-    In my current design, I've used optimistic locking for Concurrency control. My assumption here is that contention would be low, this is due to my guess that each parking lot would have a limited number of parking spots (perhaps high hundreds at the max).
+In the current design, I use Java's thread-safe concurrent collections (`ConcurrentLinkedQueue` and `ConcurrentHashMap`) rather than explicit locking.
 
-    Tradeoffs:
+### Benefits
 
-    - If there's high contention during peak traffic (perhaps during the 9 AM office stretch), then it's possible that multiple users might compete for the same spot which would mean that there could potentially be a large amount of retries -> this would cause increased latency for users
+- Simple implementation.
+- High throughput under normal workloads.
+- No risk of threads blocking while waiting for locks.
+- Atomic operations such as `poll()` and `putIfAbsent()` naturally prevent double-booking of parking spots and duplicate parking sessions.
 
-    Alternative:
+### Tradeoffs
 
-    - Pessimistic locking or a hybrid strategy where pessimistic locking takes over if there are too many retries for each thread are viable alternatives
+- During periods of heavy contention (for example, a large number of vehicles arriving simultaneously), many requests may compete for the same limited pool of parking spots.
+- The system favors fast failure over fairness; some threads may repeatedly lose the race for available spots.
+- It provides less control over scheduling and fairness compared to explicit lock-based approaches.
 
+### Alternative
+
+A hybrid approach could be used:
+
+- Use lock-free operations during normal traffic conditions.
+- Switch to per-spot or per-lot pessimistic locking when contention exceeds a threshold.
+- This can improve fairness and reduce contention-related failures during peak traffic periods, at the cost of additional complexity and lock-management overhead.
+
+### Why I Chose This Approach
+
+My assumption is that parking lots generally experience low to moderate contention most of the time. Under these conditions, lock-free concurrent collections provide a good balance of simplicity, correctness, and performance while avoiding the overhead associated with explicit locking.
