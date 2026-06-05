@@ -21,9 +21,3 @@ Design a parking lot management system that allows vehicles to park, leave, and 
 - **Concurrency:** Multiple vehicles may arrive/leave simultaneously.
 - **Reliability:** Prevent double-booking of the same parking spot.
 - **Extensibility:** Easy to add new vehicle types or payment strategies.
-
-## Optional Features / Extensions
-- Reserve a parking spot in advance.
-- Support monthly passes or subscriptions.
-- Generate reports on parking lot usage.
-- Integration with sensors or mobile apps.
