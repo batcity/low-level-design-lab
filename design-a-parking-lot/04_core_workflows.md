@@ -21,8 +21,6 @@ Key components:
 | `ParkingLot`     | Tracks parking spots |
 | `ParkingSession` | Records user, vehicle, spot, start/end times      |
 
----
-
 ## Workflows:
 
 ## 1. Start a Parking Session
@@ -49,7 +47,6 @@ Key components:
 - Only one thread can reserve each parking spot.
 - No global locks; high throughput even with many users.
 
----
 
 ## 2. End a Parking Session
 
@@ -75,7 +72,6 @@ Key components:
 - No two threads can end the same session simultaneously.
 - Spot release is atomic, preventing double-booking.
 
----
 
 ## Workflows 3 and 4 are Future Improvements:
 
@@ -92,8 +88,6 @@ Key components:
 
 - Lock-free, thread-safe read.
 - Immediate consistency for active sessions.
-
----
 
 ## 4. Get Available Parking Spots
 

@@ -8,7 +8,6 @@ Each folder focuses on a specific problem (e.g., Parking Lot, Movie ticket booki
 
 **Note:** These designs are for **learning and discussion** purposes. They are refined through practice, reading, and AI-assisted reasoning.
 
----
 
 ## 📂 Problem Write-up Template 
 
@@ -40,8 +39,6 @@ Each problem follows the same template for consistency:
 ### 8. Extensions / Next Steps
 - Features or improvements beyond the first version.  
 
----
-
 ## 🔍 Optional Add-ons for Advanced Practice
 These are not typically required in interviews but deepen understanding:
 
@@ -51,8 +48,6 @@ These are not typically required in interviews but deepen understanding:
   - **Name:** Class name  
   - **Responsibilities:** What it does
   - **Collaborators:** Other classes it interacts with
-
----
 
 ## Implementations of Common Design Patterns
 
@@ -91,8 +86,6 @@ This section contains **Java implementations of widely used object-oriented desi
 - **[Chain of Responsibility](./implementations/design_patterns/behavioral_patterns/ChainOfResponsibility/ChainOfResponsibility.java)** – Passes requests along a chain of handlers.  
 - **[Mediator](./implementations/design_patterns/behavioral_patterns/Mediator/Mediator.java)** – Centralizes communication between objects.  
 - **[Memento](./implementations/design_patterns/behavioral_patterns/Memento/Memento.java)** – Captures and restores object state.
-
----
 
 ## Why this Repo?
 
